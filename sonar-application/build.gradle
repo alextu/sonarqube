@@ -258,7 +258,11 @@ task zip(type: Zip, dependsOn: [configurations.compileClasspath, tasks.downloadL
   }
   // Create the empty dir (plugins) required by elasticsearch
   into("${archiveDir}/elasticsearch/") {
-    from "$buildDir/elasticsearch"
+    // Create the empty dir required by elasticsearch
+    from { 
+      new File(buildDir, 'elasticsearch/plugins').mkdirs()
+      "$buildDir/elasticsearch" 
+    }
   }
   into("${archiveDir}/lib/extensions/") {
     from configurations.bundledPlugin
@@ -298,10 +302,7 @@ task zip(type: Zip, dependsOn: [configurations.compileClasspath, tasks.downloadL
     from configurations.shutdowner
   }
 }
-// Create the empty dir required by elasticsearch
-zip.doFirst {
-  new File(buildDir, 'elasticsearch/plugins').mkdirs()
-}
+
 // Check the size of the archive
 zip.doLast {
   def minLength = 272000000
